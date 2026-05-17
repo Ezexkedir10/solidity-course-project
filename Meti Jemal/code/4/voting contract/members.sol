@@ -15,7 +15,21 @@ contract Voting {
     event ProposalCreated(uint proposalId);
     event VoteCast(uint proposalId, address voter);
 
-    function newProposal(address _target, bytes calldata _data) external {
+    mapping(address => bool) public isMember;
+
+    constructor(address[] memory _members) {
+        isMember[msg.sender] = true;
+        for (uint i = 0; i < _members.length; i++) {
+            isMember[_members[i]] = true;
+        }
+    }
+
+    modifier onlyMember() {
+        require(isMember[msg.sender], "Not a member");
+        _;
+    }
+
+    function newProposal(address _target, bytes calldata _data) external onlyMember {
         proposals.push(
             Proposal({
                 target: _target,
@@ -27,7 +41,7 @@ contract Voting {
         emit ProposalCreated(proposals.length - 1);
     }
 
-    function castVote(uint proposalId, bool support) external {
+    function castVote(uint proposalId, bool support) external onlyMember {
         if (support) {
             proposals[proposalId].yesCount++;
         } else {

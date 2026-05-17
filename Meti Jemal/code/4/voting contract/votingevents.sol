@@ -12,9 +12,6 @@ contract Voting {
 
     Proposal[] public proposals;
 
-    event ProposalCreated(uint proposalId);
-    event VoteCast(uint proposalId, address voter);
-
     function newProposal(address _target, bytes calldata _data) external {
         proposals.push(
             Proposal({
@@ -24,15 +21,5 @@ contract Voting {
                 noCount: 0
             })
         );
-        emit ProposalCreated(proposals.length - 1);
-    }
-
-    function castVote(uint proposalId, bool support) external {
-        if (support) {
-            proposals[proposalId].yesCount++;
-        } else {
-            proposals[proposalId].noCount++;
-        }
-        emit VoteCast(proposalId, msg.sender);
     }
 }
